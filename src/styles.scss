@@ -1,15 +1,16 @@
-/* You can add global styles to this file, and also import other style files */
+/* Minimal Apple-style SCSS */
 
 :root {
   --app-font:
-    "Roboto Flex", "Noto Sans Thai Looped", "Noto Emoji", "Noto Color Emoji";
-  --app-mono-space-font: "Roboto Mono";
+    -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue",
+    sans-serif;
+  --app-mono-space-font: "SF Mono", "Roboto Mono", monospace;
   --app-font-size: 16px;
 
   --app-background-color: #ffffff;
-
-  --app-primary-color: #0000ff;
-  --app-warn-color: #ff0000;
+  --app-primary-color: #007aff;
+  --app-warn-color: #ff3b30;
+  --app-border-color: rgba(0, 0, 0, 0.1);
 
   font-family: var(--app-font);
   font-size: var(--app-font-size);
@@ -18,25 +19,26 @@
 html,
 body {
   box-sizing: border-box;
-  margin: 0px;
-  padding: 0px;
-
+  margin: 0;
+  padding: 0;
   height: 100%;
-
   background-color: var(--app-background-color);
+  color: #1c1c1e;
 }
 
 button,
 input {
   font-family: inherit;
   font-size: inherit;
+  border: none;
+  outline: none;
+  background: transparent;
 }
 
 .app-cl-main-content {
   width: min(100%, 480px);
-
-  margin-left: auto;
-  margin-right: auto;
+  margin: auto;
+  padding: 16px;
 }
 
 .app-cmp-links {
@@ -44,76 +46,45 @@ input {
 
   & > ul {
     list-style: none;
-    padding: 0px;
-    margin: 0px;
-
+    padding: 0;
+    margin: 0;
     display: flex;
-    flex-direction: row;
-    column-gap: 8px;
     justify-content: center;
+    gap: 8px;
 
     & > li {
-      padding: 0px;
-      margin: 0px;
-
       color: var(--app-primary-color);
-
-      border: 1px solid currentColor;
-      border-radius: 4px;
+      border: 1px solid var(--app-border-color);
+      border-radius: 8px;
+      transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
 
       & > * {
         display: inline-block;
-        box-sizing: border-box;
-        height: 100%;
-        margin: 0px;
-        padding: 0.5em 1ch;
-
+        padding: 8px 16px;
         text-decoration: none;
         color: inherit;
-
-        font-weight: bold;
-
-        &:hover {
-          background-color: rgb(50% 50% 50% / 25%);
-        }
-
-        &.app-st-active {
-          background-color: rgb(50% 50% 50% / 75%);
-        }
+        font-weight: 500;
       }
     }
   }
 }
 
-.app-st-hide-navigation {
-  .app-cmp-links {
-    display: none !important;
-  }
-}
-
-.app-cl-code,
-.app-cl-number {
-  font-family: var(--app-mono-space-font);
-  font-size: inherit;
-}
-
-.app-cl-number {
-  text-align: right;
-}
-
-.app-st-hidden {
-  visibility: hidden;
-}
-
 .app-cl-button {
   display: inline-flex;
-  flex-direction: row;
-  column-gap: 4px;
   align-items: center;
-
-  font-weight: bold;
-
+  margin-top: 10px;
+  gap: 8px;
+  font-weight: 500;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: var(--app-primary-color);
+  color: white;
   cursor: pointer;
+  transition: background 0.2s ease-in-out;
+
+  &:hover {
+    background: #005ecb;
+  }
 
   &:disabled {
     opacity: 0.5;
@@ -121,57 +92,30 @@ input {
   }
 }
 
-.app-cl-primary {
-  color: var(--app-primary-color);
-}
-
-.app-cl-warn {
-  color: var(--app-warn-color);
-}
-
 .app-cmp-data-list {
   display: grid;
   grid-template-columns: 12ch 1fr;
-
-  & > :last-child {
-    margin-bottom: 1em;
-  }
+  row-gap: 8px;
 
   & > .app-cl-title {
-    display: flex;
-    flex-direction: row;
-    align-items: baseline;
-
-    font-weight: bold;
-
-    & > .app-cl-title-number {
-      margin-left: auto;
-    }
+    font-weight: 600;
+    color: #333;
   }
 }
 
 .app-cmp-data-form {
-  box-sizing: border-box;
-
   display: flex;
   flex-direction: column;
+  gap: 12px;
 
   & > .app-cl-field {
-    box-sizing: border-box;
-
     display: flex;
-    flex-direction: row;
-
-    align-items: baseline;
-
-    column-gap: 8px;
+    align-items: center;
+    gap: 8px;
 
     & > .app-cl-title {
       width: 12ch;
-    }
-
-    & > .app-cl-control {
-      flex: 1 0 auto;
+      font-weight: 500;
     }
   }
 }
@@ -179,6 +123,127 @@ input {
 .app-cl-title-number {
   display: inline-block;
   width: 3ch;
-  padding-left: 1ch;
-  padding-right: 1ch;
+  text-align: center;
+}
+
+/* Additional Apple-style SCSS */
+
+/* Centering the login section */
+.-cmp-getting-access-token {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+/* Styling the Google login button */
+.gsi-material-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  background-color: white;
+  border: 1px solid var(--app-border-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: background 0.2s ease-in-out, transform 0.1s ease-in-out;
+
+  &:hover {
+    background-color: rgba(0, 122, 255, 0.1);
+    transform: scale(1.05);
+  }
+
+  &-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Styling for the user profile section */
+.-cl-profile-image {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--app-primary-color);
+  display: block;
+  margin: 10px auto;
+}
+
+/* Smaller and refined logout button */
+.app-cl-button.app-cl-warn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  background-color: var(--app-warn-color);
+  transition: background 0.2s ease-in-out, transform 0.1s ease-in-out;
+
+  &:hover {
+    background-color: #d70015;
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Improve navigation bar */
+.app-cmp-links {
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.app-cmp-links ul {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.app-cmp-links li {
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: background 0.2s ease-in-out;
+
+  &:hover {
+    background: rgba(0, 122, 255, 0.1);
+  }
+}
+
+/* Improve messages */
+.-cl-page-message {
+  font-size: 14px;
+  color: #666;
+  max-width: 300px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+button.shake {
+  animation: shake 0.5s ease;
 }

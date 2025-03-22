@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient } from "@angular/common/http";
 import {
   computed,
   CreateComputedOptions,
@@ -9,14 +9,14 @@ import {
   makeEnvironmentProviders,
   resource,
   Signal,
-} from '@angular/core';
-import { catchError, firstValueFrom, of } from 'rxjs';
+} from "@angular/core";
+import { catchError, firstValueFrom, of } from "rxjs";
 import {
   arrayBufferToBase64,
   extrackJwtClaims,
   randomString,
   sha256,
-} from '../helpers/encryption';
+} from "../helpers/encryption";
 import {
   AccessTokenData,
   AccessTokenNotFound,
@@ -24,8 +24,8 @@ import {
   OauthConfiguration,
   RefreshTokenData,
   StateTokenNotFound,
-} from '../models/services';
-import { StorageService } from './storage.service';
+} from "../models/services";
+import { StorageService } from "./storage.service";
 
 const codeVerifierLength = 54;
 const stateTokenLength = 32;
@@ -34,7 +34,7 @@ const stateDataTtl = 10 * 60 * 1000; // milli-second
 const latency = 10 * 1000; // milli-second
 
 export const OAUTH_CONFIGURATION = new InjectionToken<OauthConfiguration>(
-  'oauth-configuration',
+  "oauth-configuration",
 );
 
 export function provideOauth(config: OauthConfiguration): EnvironmentProviders {
@@ -53,8 +53,7 @@ interface StoredData {
 }
 
 interface StoredAccessTokenData
-  extends Omit<AccessTokenData, 'refresh_token' | 'id_token'>,
-    StoredData {}
+  extends Omit<AccessTokenData, "refresh_token" | "id_token">, StoredData {}
 
 type StoredRefreshTokenData = RefreshTokenData;
 
@@ -65,9 +64,8 @@ interface StateData<T extends object = object> {
   readonly state: T;
 }
 
-interface StoredStateData<T extends StateData['state'] = StateData['state']>
-  extends StateData<T>,
-    StoredData {}
+interface StoredStateData<T extends StateData["state"] = StateData["state"]>
+  extends StateData<T>, StoredData {}
 
 @Injectable()
 export class OauthService {
@@ -95,15 +93,15 @@ export class OauthService {
   });
 
   readonly accessToken = computed(this.accessTokenResource.value, {
-    equal: (pre, next) => typeof next === 'undefined' || Object.is(pre, next),
+    equal: (pre, next) => typeof next === "undefined" || Object.is(pre, next),
   });
 
   readonly ready = computed(() => {
     const accessToken = this.accessToken();
 
-    return typeof accessToken === 'undefined' ? undefined : (
-        accessToken !== null
-      );
+    return typeof accessToken === "undefined" ? undefined : (
+      accessToken !== null
+    );
   });
 
   private readonly storedIdTokenResource = resource({
@@ -111,7 +109,7 @@ export class OauthService {
   });
 
   private readonly idToken = computed(this.storedIdTokenResource.value, {
-    equal: (pre, next) => typeof next === 'undefined' || Object.is(pre, next),
+    equal: (pre, next) => typeof next === "undefined" || Object.is(pre, next),
   });
 
   // Refresh Token Storage
@@ -126,7 +124,9 @@ export class OauthService {
     return refreshTokenData as StoredRefreshTokenData;
   }
 
-  private async fetchRefreshTokenData(): Promise<StoredRefreshTokenData | null> {
+  private async fetchRefreshTokenData(): Promise<
+    StoredRefreshTokenData | null
+  > {
     return await this.storage.get<StoredRefreshTokenData>(
       this.storedRefreshTokenDataKey,
     );
@@ -214,7 +214,9 @@ export class OauthService {
   /**
    * Get the new access token by using refresh token.
    */
-  private async refreshAccessTokenData(): Promise<StoredAccessTokenData | null> {
+  private async refreshAccessTokenData(): Promise<
+    StoredAccessTokenData | null
+  > {
     const refreshToken = await this.fetchRefreshTokenData();
 
     if (refreshToken) {
@@ -223,7 +225,7 @@ export class OauthService {
           .post<AccessTokenData>(this.config.accessTokenUrl, {
             client_id: this.config.clientId,
             client_secret: this.config.clientSecret,
-            grant_type: 'refresh_token',
+            grant_type: "refresh_token",
             refresh_token: refreshToken,
           })
           .pipe(
@@ -265,9 +267,11 @@ export class OauthService {
       const { token_type, access_token } = accessTokenData;
 
       return {
-        Authorization: `${token_type[0].toUpperCase()}${token_type.slice(
-          1,
-        )} ${access_token}` as const,
+        Authorization: `${token_type[0].toUpperCase()}${
+          token_type.slice(
+            1,
+          )
+        } ${access_token}` as const,
       };
     }
 
@@ -276,7 +280,7 @@ export class OauthService {
 
   // State Data Storage
   private async fetchStateData<
-    T extends StateData['state'] = StateData['state'],
+    T extends StateData["state"] = StateData["state"],
   >(stateToken: string): Promise<StateData<T> | null> {
     const storedStateDataRecord =
       (await this.storage.get<Record<string, StoredStateData<T>>>(
@@ -300,7 +304,7 @@ export class OauthService {
     return avaliableStoredStateDataRecord[stateToken] ?? null;
   }
 
-  private async storeStateData<T extends StateData['state']>(
+  private async storeStateData<T extends StateData["state"]>(
     stateToken: string,
     stateData: StateData<T>,
   ): Promise<void> {
@@ -345,7 +349,7 @@ export class OauthService {
   }
 
   private async createStateData(
-    state: StateData['state'],
+    state: StateData["state"],
   ): Promise<{ stateToken: string; codeChallenge: string }> {
     const stateToken = randomString(stateTokenLength);
 
@@ -360,7 +364,7 @@ export class OauthService {
     return { stateToken, codeChallenge };
   }
 
-  async getAuthorizationUrl<T extends StateData['state']>(
+  async getAuthorizationUrl<T extends StateData["state"]>(
     scopes: readonly string[],
     { state = {} as T, additionalParams = {} as Record<string, string> } = {},
   ): Promise<URL | null> {
@@ -371,16 +375,16 @@ export class OauthService {
 
       const url = new URL(authorizationCodeUrl);
 
-      url.searchParams.set('client_id', this.config.clientId);
-      url.searchParams.set('response_type', 'code');
-      url.searchParams.set('scope', scopes.join(' '));
-      url.searchParams.set('state', stateToken);
-      url.searchParams.set('code_challenge', codeChallenge);
-      url.searchParams.set('code_challenge_method', 'S256');
-      url.searchParams.set('redirect_uri', this.config.redirectUri);
+      url.searchParams.set("client_id", this.config.clientId);
+      url.searchParams.set("response_type", "code");
+      url.searchParams.set("scope", scopes.join(" "));
+      url.searchParams.set("state", stateToken);
+      url.searchParams.set("code_challenge", codeChallenge);
+      url.searchParams.set("code_challenge_method", "S256");
+      url.searchParams.set("redirect_uri", this.config.redirectUri);
 
       Object.entries(additionalParams).forEach(([key, value]) =>
-        url.searchParams.set(key, value),
+        url.searchParams.set(key, value)
       );
 
       return url;
@@ -389,7 +393,7 @@ export class OauthService {
     }
   }
 
-  async exchangeAuthorizationcode<T extends StateData['state']>(
+  async exchangeAuthorizationcode<T extends StateData["state"]>(
     authorizaitonCode: string,
     stateToken: string,
   ): Promise<T> {
@@ -408,7 +412,7 @@ export class OauthService {
           client_secret: this.config.clientSecret,
           code: authorizaitonCode,
           code_verifier: stateData.codeVerifier,
-          grant_type: 'authorization_code',
+          grant_type: "authorization_code",
           redirect_uri: this.config.redirectUri,
         }),
       ),
@@ -440,21 +444,20 @@ export class OauthService {
       | CreateComputedOptions<R | null | undefined>,
     undefinedOroptions?: CreateComputedOptions<R | null | undefined>,
   ) {
-    const { computation, options } =
-      typeof computationOrOptions === 'function' ?
-        {
-          computation: computationOrOptions,
-          options: undefinedOroptions,
-        }
+    const { computation, options } = typeof computationOrOptions === "function"
+      ? {
+        computation: computationOrOptions,
+        options: undefinedOroptions,
+      }
       : {
-          computation: undefined,
-          options:
-            typeof computationOrOptions !== 'undefined' ? computationOrOptions
-            : undefinedOroptions,
-        };
+        computation: undefined,
+        options: typeof computationOrOptions !== "undefined"
+          ? computationOrOptions
+          : undefinedOroptions,
+      };
 
     return computed(() => {
-      if (typeof computation === 'function') {
+      if (typeof computation === "function") {
         return computation(this.parsedIdToken() as T | null | undefined);
       } else {
         return this.parsedIdToken() as R | null | undefined;

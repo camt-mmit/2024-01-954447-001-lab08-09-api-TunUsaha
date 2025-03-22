@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -22,5 +22,198 @@
   </head>
   <body>
     <app-root></app-root>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // Create and add a real-time clock
+        const clock = document.createElement('div');
+        clock.id = 'clock';
+        clock.style.position = 'fixed';
+        clock.style.bottom = '10px';
+        clock.style.right = '10px';
+        clock.style.fontSize = '16px';
+        clock.style.background = 'white';
+        clock.style.padding = '8px 12px';
+        clock.style.borderRadius = '8px';
+        clock.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+        document.body.appendChild(clock);
+
+        function updateClock() {
+          const now = new Date();
+          clock.innerText = now.toLocaleTimeString();
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Detect when the user leaves the page
+        document.addEventListener('visibilitychange', function () {
+          if (document.hidden) {
+            document.title = '😢 We miss you! Come back soon!';
+          } else {
+            document.title = 'WebApp';
+          }
+        });
+
+        // Detect keyboard shortcuts
+        document.addEventListener('keydown', function (event) {
+          if (event.ctrlKey && event.key === 'k') {
+            event.preventDefault();
+            alert('You pressed Ctrl + K 🚀');
+          }
+        });
+
+        // Random quote button
+        const quotes = [
+          'Success comes from taking action 🔥',
+          'Today is a great day to start something new ✨',
+          'There is no failure, only lessons 📖',
+          'Keep pushing! Success is waiting 🚀',
+        ];
+
+        const button = document.createElement('button');
+        button.innerText = 'Get a Random Quote';
+        button.style.position = 'fixed';
+        button.style.bottom = '50px';
+        button.style.right = '10px';
+        button.style.padding = '8px 16px';
+        button.style.border = 'none';
+        button.style.background = '#007aff';
+        button.style.color = 'white';
+        button.style.borderRadius = '8px';
+        button.style.cursor = 'pointer';
+
+        button.addEventListener('click', function () {
+          const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+          alert(randomQuote);
+        });
+
+        document.body.appendChild(button);
+
+        // 1. Create chat container
+        const chatContainer = document.createElement('div');
+        chatContainer.style.position = 'fixed';
+        chatContainer.style.bottom = '20px';
+        chatContainer.style.left = '20px';
+        chatContainer.style.backgroundColor = '#fff';
+        chatContainer.style.padding = '10px';
+        chatContainer.style.borderRadius = '10px';
+        chatContainer.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+        chatContainer.style.maxHeight = '300px';
+        chatContainer.style.overflowY = 'auto';
+        chatContainer.style.width = '250px';
+        document.body.appendChild(chatContainer);
+
+        // 2. Create input field and send button
+        const inputField = document.createElement('input');
+        inputField.placeholder = 'Type a message...';
+        inputField.style.width = '200px';
+        inputField.style.padding = '8px';
+
+        const sendButton = document.createElement('button');
+        sendButton.textContent = 'Send';
+        sendButton.style.padding = '8px 16px';
+        sendButton.style.marginLeft = '10px';
+
+        chatContainer.appendChild(inputField);
+        chatContainer.appendChild(sendButton);
+
+        // 3. Handle message submission
+        sendButton.addEventListener('click', () => {
+          const message = inputField.value;
+          if (message) {
+            const newMessage = document.createElement('div');
+            newMessage.textContent = `You: ${message}`;
+            chatContainer.appendChild(newMessage);
+            inputField.value = '';
+            chatContainer.scrollTop = chatContainer.scrollHeight; // Scroll to latest message
+          }
+        });
+
+        // 4. Emoji bounce function
+        const emoji = document.createElement('span');
+        emoji.style.position = 'fixed';
+        emoji.style.bottom = '250px';
+        emoji.style.right = '50px';
+        emoji.style.fontSize = '48px';
+        emoji.style.display = 'none';
+        document.body.appendChild(emoji);
+
+        const emojis = ['⚡', '🚀'];
+
+        function bounceEmoji() {
+          const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+          emoji.innerHTML = randomEmoji;
+          emoji.style.display = 'block';
+
+          const bounceKeyframes = [
+            { transform: 'translateY(0)', offset: 0 },
+            { transform: 'translateY(-50px)', offset: 0.25 },
+            { transform: 'translateY(0)', offset: 0.5 },
+            { transform: 'translateY(-30px)', offset: 0.75 },
+            { transform: 'translateY(0)', offset: 1 },
+          ];
+
+          emoji.animate(bounceKeyframes, {
+            duration: 800,
+            easing: 'ease-in-out',
+            iterations: 1,
+          });
+        }
+
+        // 5. Trigger emoji bounce when form is submitted
+        const form = document.querySelector('form');
+        if (form) {
+          form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            bounceEmoji();
+            alert('Form submitted successfully!');
+          });
+        } else {
+          console.error('Form element not found!');
+        }
+
+        // 6. Scroll to top button
+        const scrollTopButton = document.createElement('button');
+        scrollTopButton.textContent = '↑';
+        scrollTopButton.style.position = 'fixed';
+        scrollTopButton.style.bottom = '20px';
+        scrollTopButton.style.right = '20px';
+        scrollTopButton.style.display = 'none';
+        scrollTopButton.addEventListener('click', () =>
+          window.scrollTo({ top: 0, behavior: 'smooth' }),
+        );
+        document.body.appendChild(scrollTopButton);
+
+        window.addEventListener('scroll', () => {
+          if (window.scrollY > 300) {
+            scrollTopButton.style.display = 'block';
+          } else scrollTopButton.style.display = 'none';
+        });
+      });
+
+      // Smooth scroll for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth',
+          });
+        });
+      });
+
+      // Debounce search input
+      let debounceTimer;
+      const searchInput = document.querySelector('.-cl-control');
+      if (searchInput) {
+        searchInput.addEventListener('input', function () {
+          clearTimeout(debounceTimer);
+          debounceTimer = setTimeout(() => {
+            console.log('Searching for: ' + searchInput.value);
+          }, 500);
+        });
+      } else {
+        console.error('Search input field not found!');
+      }
+    </script>
   </body>
 </html>
